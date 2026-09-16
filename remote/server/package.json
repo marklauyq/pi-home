@@ -1,0 +1,10 @@
+{
+  "name": "pi-remote-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Pi Remote Control relay server. Only runtime dep is ws; everything else is node: builtins.",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}

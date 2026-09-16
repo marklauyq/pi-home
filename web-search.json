@@ -1,0 +1,7 @@
+{
+  "searxngBaseUrl": "http://<SEARXNG_HOST>:8888",
+  "ssrf": {
+    "allowRanges": ["<SEARXNG_HOST>/32"]
+  },
+  "workflow": "none"
+}

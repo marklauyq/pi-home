@@ -1,0 +1,6 @@
+# Build context = remote/. Keep the image minimal and never ship secrets.
+state/
+**/node_modules/
+docker/
+DESIGN.md
+NOTES-*.md

@@ -1,0 +1,42 @@
+auth.json
+trust.json
+sessions/
+mcp.json
+
+# machine-local state / logs
+models-store.json
+pi-crash.log
+
+node_modules/
+# never commit
+run-history.jsonl
+missions/
+bin/
+*.bak
+bin/
+npm/
+git/
+
+# git worktrees (in-project layout, see skills/git-worktrees)
+.worktrees/
+figma-pat
+.remote-pull-dismissed.json
+
+# remote-control server runtime state
+remote/state/
+
+# local settings (see settings.json.dist template; carries remoteControl token)
+settings.json
+mcp-cache.json
+
+# machine-local credentials / temp
+telegram.json
+tmp/
+
+# per-project task queue (created when cwd is ~/.pi/agent itself)
+.pi/
+
+pi-tui-crash.log
+
+# pi-web-access search cache (machine-local)
+web-search-cache/

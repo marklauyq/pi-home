@@ -1,0 +1,176 @@
+{
+  "providers": {
+    "llama-server": {
+      "baseUrl": "http://<MODEL_HOST>:1234/v1",
+      "api": "openai-completions",
+      "apiKey": "none",
+      "models": [
+        {
+          "id": "qwen38-27b",
+          "name": "Qwen3.8 27B NVFP4 (262k)",
+          "reasoning": true,
+          "compat": {
+            "supportsReasoningEffort": true,
+            "supportsThinkingTokenBudget": true
+          },
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": null,
+            "xhigh": "xhigh",
+            "max": null
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 15,
+            "output": 75,
+            "cacheRead": 1.875,
+            "cacheWrite": 18.75
+          }
+        },
+        {
+          "id": "deepseek/deepseek-v4-flash-vision-exp",
+          "name": "Deepseek V4 flash (OpenRouter)",
+          "reasoning": true,
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 1048576,
+          "maxTokens": 384000,
+          "cost": {
+            "input": 0.22,
+            "output": 0.66,
+            "cacheRead": 0.007,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen3.8-flash-next",
+          "name": "Qwen3.8 Flash-Next vLLM",
+          "reasoning": true,
+          "compat": {
+            "supportsReasoningEffort": true
+          },
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": null,
+            "xhigh": "xhigh",
+            "max": null
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "auto",
+          "name": "Auto (proxy router -> Flash-Next vLLM)",
+          "reasoning": true,
+          "compat": {
+            "supportsReasoningEffort": true,
+            "supportsThinkingTokenBudget": true
+          },
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": null,
+            "xhigh": "xhigh",
+            "max": null
+          },
+          "input": [
+            "text",
+            "image"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 0,
+            "output": 0,
+            "cacheRead": 0,
+            "cacheWrite": 0
+          }
+        },
+        {
+          "id": "qwen35b-nvfp4",
+          "name": "Qwen 3.6 35B NVFP4",
+          "reasoning": true,
+          "compat": {
+            "thinkingFormat": "qwen-chat-template",
+            "supportsReasoningEffort": true
+          },
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": "low",
+            "medium": "medium",
+            "high": null,
+            "xhigh": "xhigh",
+            "max": null
+          },
+          "input": [
+            "text"
+          ],
+          "contextWindow": 262144,
+          "maxTokens": 32000,
+          "cost": {
+            "input": 3,
+            "output": 15,
+            "cacheRead": 0.375,
+            "cacheWrite": 3.75
+          }
+        },
+        {
+          "id": "deepseek/deepseek-v4-flash-0731",
+          "name": "DeepSeek V4 Flash 0731 (proxy -> OpenRouter)",
+          "reasoning": true,
+          "compat": {
+            "supportsDeveloperRole": false,
+            "thinkingFormat": "openrouter",
+            "requiresReasoningContentOnAssistantMessages": true
+          },
+          "thinkingLevelMap": {
+            "off": "none",
+            "minimal": null,
+            "low": null,
+            "medium": null,
+            "high": "high",
+            "xhigh": "xhigh",
+            "max": null
+          },
+          "input": [
+            "text"
+          ],
+          "contextWindow": 1048576,
+          "maxTokens": 943718,
+          "cost": {
+            "input": 0.065,
+            "output": 0.18,
+            "cacheRead": 0.016,
+            "cacheWrite": 0
+          }
+        }
+      ]
+    }
+  }
+}

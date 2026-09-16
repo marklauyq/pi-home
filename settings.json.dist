@@ -1,0 +1,35 @@
+{
+  "lastChangelogVersion": "0.84.2",
+  "theme": "catppuccin-mocha",
+  "llamaServerUrl": "http://localhost:1234",
+  "packages": [
+    "npm:pi-llama-cpp",
+    "npm:pi-web-access",
+    "npm:pi-mcp-adapter"
+  ],
+  "defaultModel": "qwen38-27b",
+  "subagents": {
+    "defaultModel": "llama-server/qwen3.8-flash-next"
+  },
+  "defaultThinkingLevel": "medium",
+  "defaultProvider": "llama-server",
+  "tuiMode": "fullscreen",
+  "steeringMode": "all",
+  "compaction": {
+    "enabled": true
+  },
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "enableInstallTelemetry": true,
+  "myCompact": {
+    "model": "llama-server/qwen3.8-flash-next",
+    "thinkingLevel": "low"
+  },
+  "httpIdleTimeoutMs": 1200000,
+  "remoteControl": {
+    "url": "ws://<server-host>:4820",
+    "token": "<token-from-server-status>",
+    "name": "<device-name-optional-defaults-to-hostname>"
+  }
+}

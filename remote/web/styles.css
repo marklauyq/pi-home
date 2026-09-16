@@ -1,0 +1,762 @@
+/* ===== Catppuccin Mocha ===== */
+:root {
+  --base: #1e1e2e;
+  --mantle: #181825;
+  --crust: #11111b;
+  --surface0: #313244;
+  --surface1: #45475a;
+  --surface2: #585b70;
+  --overlay0: #6c7086;
+  --overlay1: #7f849c;
+  --subtext0: #a6adc8;
+  --subtext1: #bac2de;
+  --text: #cdd6f4;
+  --blue: #89b4fa;
+  --lavender: #b4befe;
+  --mauve: #cba6f7;
+  --green: #a6e3a1;
+  --red: #f38ba8;
+  --peach: #fab387;
+  --yellow: #f9e2af;
+  --flamingo: #f2cdcd;
+  --pink: #f5c2e7;
+  --sapphire: #74c7ec;
+  --sky: #89dceb;
+  --rosewater: #f5e0dc;
+  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "SF Mono", "Fira Code", "Fira Mono", "Roboto Mono", Consolas, monospace;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* Kill double-tap zoom (incl. in the chat input) while keeping pinch-zoom
+   and normal scrolling. Without this, a double-tap on the composer in a
+   mobile browser zooms the page instead of selecting the word under it. */
+html, body, input, button, .session-card, .msg-user, .msg-assistant {
+  touch-action: manipulation;
+}
+[hidden] { display: none !important; }
+
+html, body {
+  height: 100%;
+  background: var(--base);
+  color: var(--text);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+}
+
+/* ===== Overlay (login) ===== */
+.overlay {
+  position: fixed; inset: 0;
+  background: var(--crust);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  z-index: 100;
+}
+.overlay-box {
+  background: var(--mantle);
+  border-radius: 16px;
+  padding: 32px 28px;
+  width: 90%; max-width: 360px;
+  text-align: center;
+}
+.overlay-box h2 {
+  font-weight: 300;
+  font-size: 24px;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+.overlay-box input {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid var(--surface0);
+  border-radius: 8px;
+  background: var(--base);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 12px;
+}
+.overlay-box input:focus {
+  border-color: var(--blue);
+}
+.overlay-box button {
+  width: 100%;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--blue);
+  color: var(--crust);
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+}
+.overlay-box button:hover { opacity: 0.9; }
+.error-text { color: var(--red); font-size: 13px; margin-top: 8px; min-height: 20px; }
+.hint { color: var(--overlay0); font-size: 12px; margin-top: 12px; }
+
+/* ===== App layout ===== */
+.app {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ===== Icon rail (desktop) ===== */
+.rail {
+  width: 48px;
+  min-width: 48px;
+  background: var(--mantle);
+  border-right: 1px solid var(--surface0);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 12px;
+  gap: 8px;
+  z-index: 10;
+}
+.rail-btn {
+  width: 36px; height: 36px;
+  border: none; border-radius: 8px;
+  background: transparent;
+  color: var(--overlay0);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+.rail-btn:hover { background: var(--surface0); color: var(--text); }
+.rail-btn.active { background: var(--surface0); color: var(--blue); }
+.rail-btn svg { width: 20px; height: 20px; }
+
+/* ===== Session list pane ===== */
+.session-list {
+  width: 320px;
+  min-width: 320px;
+  background: var(--mantle);
+  border-right: 1px solid var(--surface0);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.device-list, .history-list {
+  overflow-y: auto;
+  flex: 1;
+}
+.device-list {
+  border-bottom: 1px solid var(--surface0);
+  max-height: 200px;
+}
+.history-list { flex: 1; }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--overlay0);
+  padding: 12px 16px 6px;
+}
+
+/* Device item */
+.device-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--subtext0);
+}
+.device-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.device-dot.connected { background: var(--green); }
+.device-dot.disconnected { background: var(--overlay0); }
+
+/* Session card */
+.session-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.12s;
+  border-left: 3px solid transparent;
+}
+.session-card:hover { background: var(--surface0); }
+.session-card.active {
+  background: var(--surface0);
+  border-left-color: var(--blue);
+}
+.session-card-icon {
+  width: 36px; height: 36px;
+  min-width: 36px;
+  border-radius: 8px;
+  background: var(--surface0);
+  display: flex; align-items: center; justify-content: center;
+  color: var(--mauve);
+  font-size: 16px;
+}
+.session-card-body {
+  flex: 1;
+  min-width: 0;
+}
+.session-card-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.session-card-subtitle {
+  font-size: 11px;
+  color: var(--overlay0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.session-card-time {
+  font-size: 11px;
+  color: var(--overlay0);
+}
+.session-card-preview {
+  font-size: 12px;
+  color: var(--overlay0);
+  border-top: 1px solid var(--surface0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.session-card-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 2px;
+}
+.session-card-cwd {
+  font-size: 11px;
+  color: var(--overlay0);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+/* Live session state: running is emphasised, idle is visible but muted */
+.session-card.running {
+  border-left-color: var(--green);
+}
+.session-card-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin-top: 2px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--overlay1);
+}
+.state-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--overlay0);
+}
+.session-card-state.running {
+  color: var(--green);
+}
+.session-card-state.running .state-dot {
+  background: var(--green);
+  animation: gen-pulse 1.4s ease-in-out infinite;
+}
+
+/* Generation status (thinking/typing) above the composer */
+.gen-status {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 4px 18px 6px;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--subtext0);
+}
+.gen-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: gen-pulse 1.4s ease-in-out infinite;
+}
+.gen-status[data-mode="typing"] .gen-dot {
+  background: var(--blue);
+}
+@keyframes gen-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.3; transform: scale(0.75); }
+}
+
+/* History group */
+.history-group {
+  border-bottom: 1px solid var(--surface0);
+}
+.history-group-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--overlay0);
+  padding: 12px 16px 4px;
+}
+
+/* ===== Chat pane ===== */
+.chat-pane {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: var(--base);
+  overflow: hidden;
+}
+.chat-empty {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--overlay0);
+  font-size: 14px;
+}
+.chat-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Chat header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  background: var(--mantle);
+  border-bottom: 1px solid var(--surface0);
+  min-height: 48px;
+}
+.btn-back, .btn-more {
+  width: 32px; height: 32px;
+  border: none; border-radius: 6px;
+  background: transparent;
+  color: var(--subtext0);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.btn-back:hover, .btn-more:hover { background: var(--surface0); color: var(--text); }
+.btn-back svg, .btn-more svg { width: 20px; height: 20px; }
+.chat-title {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.chat-title-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.chat-subtitle {
+  font-size: 11px;
+  color: var(--overlay0);
+}
+
+/* Offline banner */
+.offline-banner {
+  background: var(--surface0);
+  color: var(--peach);
+  font-size: 12px;
+  padding: 6px 16px;
+  text-align: center;
+}
+
+/* Read-only hint */
+.readonly-hint {
+  background: var(--surface0);
+  color: var(--overlay0);
+  font-size: 11px;
+  padding: 4px 16px;
+  text-align: center;
+}
+
+/* Messages */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 16px 28px;  /* extra bottom space so the last message never crowds the composer */
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+/* Message types */
+.msg-user {
+  align-self: flex-end;
+  background: var(--surface0);
+  border-radius: 16px 16px 4px 16px;
+  padding: 10px 14px;
+  max-width: 80%;
+  font-size: 14px;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.msg-assistant {
+  align-self: flex-start;
+  max-width: 90%;
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+}
+.msg-assistant p { margin-bottom: 8px; }
+.msg-assistant p:last-child { margin-bottom: 0; }
+.msg-assistant pre {
+  background: var(--crust);
+  border-radius: 8px;
+  padding: 12px;
+  overflow-x: auto;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.5;
+  margin: 8px 0;
+}
+.msg-assistant code {
+  font-family: var(--font-mono);
+  font-size: 0.9em;
+}
+.msg-assistant :not(pre) > code {
+  background: var(--surface0);
+  padding: 2px 5px;
+  border-radius: 4px;
+}
+.msg-assistant strong { color: var(--text); font-weight: 600; }
+.msg-assistant a { color: var(--blue); text-decoration: underline; }
+.msg-assistant ul, .msg-assistant ol { padding-left: 20px; margin: 4px 0; }
+.msg-assistant li { margin-bottom: 2px; }
+
+.msg-tool {
+  align-self: flex-start;
+  font-size: 12px;
+  color: var(--overlay0);
+  padding: 4px 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.msg-tool::before {
+  content: "⚙";
+  font-size: 12px;
+}
+
+/* Running pulse dot */
+.pulse-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  display: inline-block;
+  animation: pulse 1.2s ease-in-out infinite;
+  margin-left: 8px;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Composer */
+.composer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--mantle);
+  border-top: 1px solid var(--surface0);
+}
+.composer input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--surface0);
+  border-radius: 20px;
+  background: var(--base);
+  color: var(--text);
+  font-size: 14px;
+  outline: none;
+  font-family: var(--font-sans);
+}
+.composer input:focus { border-color: var(--blue); }
+.composer input:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-send, .btn-stop {
+  width: 36px; height: 36px;
+  border: none; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+.btn-send {
+  background: var(--blue);
+  color: var(--crust);
+}
+.btn-send:hover { opacity: 0.85; }
+.btn-send svg { width: 18px; height: 18px; }
+.btn-stop {
+  background: var(--red);
+  color: var(--crust);
+}
+.btn-stop:hover { opacity: 0.85; }
+.btn-stop svg { width: 14px; height: 14px; }
+
+/* ===== Settings pane ===== */
+.settings-pane {
+  width: 320px;
+  min-width: 320px;
+  background: var(--mantle);
+  border-left: 1px solid var(--surface0);
+  padding: 20px;
+  overflow-y: auto;
+}
+.settings-card {
+  background: var(--base);
+  border-radius: 12px;
+  padding: 20px;
+}
+.settings-card h3 {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 16px;
+}
+.setting-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--surface0);
+  font-size: 13px;
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-row span:first-child { color: var(--overlay0); }
+.setting-row span:last-child { color: var(--text); text-align: right; max-width: 60%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.conn-status { color: var(--green) !important; }
+
+/* ===== Mobile settings sheet ===== */
+#settings-sheet .settings-card { text-align: left; }
+#settings-sheet .settings-card h3 { margin-bottom: 12px; }
+#settings-sheet-close { margin-top: 16px; }
+
+/* ===== Session "more" menu (3-dot) ===== */
+.session-menu {
+  position: fixed;
+  z-index: 200;
+  min-width: 180px;
+  background: var(--mantle);
+  border: 1px solid var(--surface0);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  padding: 4px;
+  font-size: 13px;
+}
+.session-menu-item {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+  font-size: 13px;
+}
+.session-menu-item:hover { background: var(--surface0); }
+.session-menu-item.danger { color: var(--red); }
+.session-menu-item.danger:hover { background: rgba(243, 69, 58, 0.12); }
+
+/* ===== Mobile-only UI must never appear on desktop =====
+   JS toggles .hidden for mobile state machine (renderHome/renderChat), which
+   can leave mobile elements visible on desktop until the next resize event.
+   CSS wins at the breakpoint regardless of JS state. */
+@media (min-width: 820px) {
+  .mobile-header, .mobile-chat-header { display: none !important; }
+}
+
+/* ===== Mobile ===== */
+@media (max-width: 819px) {
+  .rail, .settings-pane { display: none !important; }
+  .app { flex-direction: column; }
+
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    background: var(--mantle);
+  }
+  .mobile-title {
+    font-size: 32px;
+    font-weight: 200;
+    color: var(--text);
+  }
+  .btn-settings-mobile {
+    width: 36px; height: 36px;
+    border: none; border-radius: 8px;
+    background: transparent;
+    color: var(--overlay0);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-settings-mobile:hover { background: var(--surface0); color: var(--text); }
+  .btn-settings-mobile svg { width: 20px; height: 20px; }
+
+  /* Mobile chat header */
+  .mobile-chat-header {
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    background: var(--mantle);
+    min-height: 48px;
+  }
+  .btn-back-mobile {
+    width: 32px; height: 32px;
+    border: none; border-radius: 6px;
+    background: transparent;
+    color: var(--subtext0);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-back-mobile svg { width: 20px; height: 20px; }
+  .btn-more-mobile {
+    width: 32px; height: 32px;
+    border: none; border-radius: 6px;
+    background: transparent;
+    color: var(--subtext0);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .btn-more-mobile svg { width: 20px; height: 20px; }
+  .mobile-chat-title {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 8px;
+  }
+  .mobile-chat-title span:first-child {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .mobile-chat-title span:last-child {
+    font-size: 11px;
+    color: var(--overlay0);
+  }
+
+  /* Mobile home view: show session list, hide chat */
+  .app[data-view="home"] .mobile-chat-header {
+    display: none !important;
+  }
+  .app[data-view="home"] .session-list {
+    display: flex;
+    width: 100%;
+    min-width: unset;
+    border-right: none;
+    border-bottom: 1px solid var(--surface0);
+  }
+  .app[data-view="home"] .chat-pane {
+    display: none !important;
+  }
+
+  /* Mobile chat view: hide session list, show chat */
+  .app[data-view="chat"] .mobile-header {
+    display: none !important;
+  }
+  /* The in-chat header (back/title/more) is the desktop one — on mobile the
+     mobile-chat-header above already provides it. Hide it or the chat view
+     shows two headers. */
+  .app[data-view="chat"] .chat-header {
+    display: none !important;
+  }
+  .app[data-view="chat"] .session-list {
+    display: none !important;
+  }
+  .app[data-view="chat"] .chat-pane {
+    display: flex;
+    flex: 1;
+  }
+
+  .device-item {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+
+  .session-card {
+    padding: 12px 20px;
+  }
+  .session-card-icon {
+    width: 40px; height: 40px;
+    min-width: 40px;
+    font-size: 18px;
+  }
+  .session-card-title { font-size: 14px; }
+  .session-card-subtitle { font-size: 12px; }
+  .session-card-cwd { font-size: 12px; }
+  .session-card-meta { font-size: 12px; }
+
+  /* Mobile composer */
+  .composer {
+    padding: 10px 12px;
+  }
+  .composer input {
+    padding: 12px 16px;
+    border-radius: 24px;
+    font-size: 16px;
+  }
+  .btn-send, .btn-stop {
+    width: 40px; height: 40px;
+  }
+
+  /* Mobile messages */
+  .chat-messages {
+    padding: 12px 12px 24px;
+  }
+  .msg-user {
+    max-width: 85%;
+  }
+  .msg-assistant {
+    max-width: 95%;
+  }
+}
+
+/* Mobile settings pane: show as full-screen overlay when open */
+@media (max-width: 819px) {
+  .settings-pane:not([hidden]) {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    background: var(--mantle);
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .settings-pane:not([hidden]) .settings-card {
+    background: var(--base);
+    border-radius: 12px;
+    padding: 20px;
+  }
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface0); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--surface1); }

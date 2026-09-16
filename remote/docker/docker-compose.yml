@@ -1,0 +1,22 @@
+# Pi Remote Control — docker compose
+# State dir (token, devices.json) is mounted so the container uses the
+# SAME token as the bare-metal setup; clients need no changes.
+#
+#   docker compose -f remote/docker/docker-compose.yml up -d --build
+#   docker compose -f remote/docker/docker-compose.yml logs -f
+#   docker compose -f remote/docker/docker-compose.yml down
+#
+# (The `remote` CLI does all of this: `remote start|status|stop`.)
+
+services:
+  relay:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: pi-remote-relay:latest
+    container_name: pi-remote-relay
+    ports:
+      - "${PI_REMOTE_PORT:-4820}:4820"
+    volumes:
+      - ../state:/state
+    restart: unless-stopped
