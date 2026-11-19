@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# One-time wiring for the versioned git hooks in git-hooks/.
+#
+# git only reads hooks from .git/hooks (unversioned) unless you point it
+# somewhere else, so a fresh clone of this repo needs this run once:
+#
+#   scripts/install-git-hooks
+#
+# Verify afterwards with:  git config core.hooksPath
+set -euo pipefail
+cd "$(git rev-parse --show-toplevel)"
+
+chmod +x git-hooks/*
+git config core.hooksPath git-hooks
+echo "core.hooksPath -> $(git config core.hooksPath)"
+echo "installed: $(ls git-hooks | tr '\n' ' ')"
+echo "test with: echo 'refs/heads/main x refs/heads/main y' | git-hooks/pre-push origin git@github.com:marklauyq/pi-home.git"

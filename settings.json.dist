@@ -1,0 +1,30 @@
+{
+  "lastChangelogVersion": "1.5.2",
+  "theme": "catppuccin-mocha",
+  "packages": [
+    "npm:pi-mcp-adapter"
+  ],
+  "subagents": {
+    "defaultModel": "llama-server/auto"
+  },
+  "defaultThinkingLevel": "medium",
+  "defaultProvider": "llama-server",
+  "tuiMode": "fullscreen",
+  "steeringMode": "all",
+  "compaction": {
+    "enabled": true
+  },
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "enableInstallTelemetry": true,
+  "myCompact": {
+    "model": "llama-server/auto",
+    "thinkingLevel": "low"
+  },
+  "httpIdleTimeoutMs": 1200000,
+  "defaultTools": ["+codemode"],
+  "extensionChangelogVersions": {
+    "{\"source\":\"npm:pi-mcp-adapter\",\"scope\":\"user\"}": "7.0.1"
+  }
+}

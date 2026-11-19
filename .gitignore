@@ -1,0 +1,56 @@
+auth.json
+auth.json.bak*
+trust.json
+sessions/
+mcp.json
+
+# machine-local state / logs
+models-store.json
+pi-crash.log
+# pi-mcp-adapter onboarding state (bumps with every pi version -> conflicts on every pull)
+mcp-onboarding.json
+
+# machine-local skill symlinks into ~/local-project (absolute paths, broken elsewhere)
+skills/paperclip
+skills/paperclip-board
+skills/paperclip-converting-plans-to-tasks
+skills/paperclip-create-agent
+skills/para-memory-files
+
+node_modules/
+# never commit
+run-history.jsonl
+missions/
+bin/
+*.bak
+bin/
+npm/
+git/
+
+# git worktrees (in-project layout, see skills/git-worktrees)
+.worktrees/
+figma-pat
+.remote-pull-dismissed.json
+
+# local settings (see settings.json.dist template)
+settings.json
+mcp-cache.json
+
+# machine-local credentials / temp
+telegram.json
+tmp/
+
+# per-project task queue (created when cwd is ~/.pi/agent itself)
+.pi/
+
+pi-tui-crash.log
+
+# pi-web-access search cache (machine-local)
+web-search-cache/
+secrets-intake.json
+
+# remote pairing state (device list + auth token) — machine-local, never commit
+remote/
+
+# pi-mcp-adapter version marker — machine-local
+mcp-last-seen-version.json

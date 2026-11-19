@@ -1,0 +1,26 @@
+{
+  "lastChangelogVersion": "0.86.0",
+  "theme": "catppuccin-mocha",
+  "packages": [
+    "npm:pi-web-access",
+    "npm:pi-mcp-adapter",
+    "npm:@llblab/pi-telegram"
+  ],
+  "defaultModel": "qwen3.8-flash-next",
+  "defaultThinkingLevel": "medium",
+  "defaultProvider": "llama-server",
+  "tuiMode": "fullscreen",
+  "steeringMode": "all",
+  "compaction": {
+    "enabled": true
+  },
+  "terminal": {
+    "showTerminalProgress": true
+  },
+  "enableInstallTelemetry": true,
+  "httpIdleTimeoutMs": 1200000,
+  "myCompact": {
+    "model": "llama-server/auto",
+    "thinkingLevel": "low"
+  }
+}

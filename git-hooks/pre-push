@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+# pre-push: run the pi-home sanitizer gate BEFORE the push leaves the machine.
+#
+# Why: publish-pi-home builds + `check`s a sanitized tree on CI and refuses to
+# publish when a BANNED pattern survives the scrub. That gate is correct but it
+# only speaks in workflow-failure emails — it silently failed for two months
+# (23 consecutive red runs) before anyone looked. This hook moves the same
+# signal to the moment you type `git push`.
+#
+# It is an EARLY WARNING, not the gate: CI still runs build+check and is the
+# thing that actually protects the public repo. Tooling problems (no node,
+# broken script) warn and let the push through; a confirmed leak blocks it.
+#
+# Bypass:  PI_SKIP_PUBLISH_CHECK=1 git push
+set -uo pipefail
+
+REPO_ROOT=$(git rev-parse --show-toplevel)
+cd "$REPO_ROOT" || exit 0
+
+# Only main publishes pi-home; other branches are free to move.
+publishing=0
+while read -r _local_ref _local_sha remote_ref _remote_sha _url; do
+  case "$remote_ref" in
+    refs/heads/main) publishing=1 ;;
+  esac
+done
+[ "$publishing" -eq 1 ] || exit 0
+
+if [ "${PI_SKIP_PUBLISH_CHECK:-0}" = "1" ]; then
+  echo "pre-push: PI_SKIP_PUBLISH_CHECK=1 — pi-home leak check skipped" >&2
+  exit 0
+fi
+if [ ! -f scripts/make-public.mjs ]; then
+  echo "pre-push: scripts/make-public.mjs missing — skipping pi-home leak check" >&2
+  exit 0
+fi
+if ! command -v node >/dev/null 2>&1; then
+  echo "pre-push: node not on PATH — skipping pi-home leak check" >&2
+  exit 0
+fi
+
+dest=$(mktemp -d "${TMPDIR:-/tmp}/pi-home-prepush.XXXXXX")
+trap 'rm -rf "$dest"' EXIT
+
+echo "pre-push: building sanitized pi-home tree..." >&2
+if ! PI_AGENT_HOME="$REPO_ROOT" node scripts/make-public.mjs build --dest "$dest" >/dev/null 2>&1; then
+  echo "pre-push: WARNING — pi-home build failed, leak check did not run." >&2
+  echo "pre-push:          Run 'node scripts/make-public.mjs build --dest /tmp/pi-home-build' to see why." >&2
+  exit 0
+fi
+
+out=$(PI_AGENT_HOME="$REPO_ROOT" node scripts/make-public.mjs check --dest "$dest" 2>&1)
+if printf '%s' "$out" | grep -q '"ok": *true'; then
+  echo "pre-push: pi-home leak check OK" >&2
+  exit 0
+fi
+
+echo "" >&2
+echo "pre-push: BLOCKED — pi-home leak check found unscrubbed content." >&2
+echo "Preventing the push, because publish-pi-home would fail this and you" >&2
+echo "would only find out from an email." >&2
+echo "" >&2
+printf '%s\n' "$out" | grep -A3 -E '"file"|"pattern"|"text"' | head -60 >&2
+echo "" >&2
+echo "Fix: add a SCRUB entry (and BANNED if it must never appear) in" >&2
+echo "      scripts/make-public.mjs   — see the SCRUBS table comment." >&2
+echo "Then: node scripts/make-public.mjs build --dest /tmp/pi-home-build && \\" >&2
+echo "        node scripts/make-public.mjs check --dest /tmp/pi-home-build" >&2
+echo "Override (knowingly): PI_SKIP_PUBLISH_CHECK=1 git push" >&2
+exit 1
